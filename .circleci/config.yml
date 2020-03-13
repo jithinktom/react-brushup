@@ -1,17 +1,31 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1.6
+  docker: circleci/docker@0.5.13
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  run_tests:
+    docker:
+      - image: circleci/node:latest
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: npm test
+  
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+  build_and_deploy:
+    jobs:
+      - run_tests
+      - docker/publish:
+          image: jithinktom/react-brushup
+          dockerfile: dockerfile
+          requires:
+            - run_tests
+          filters:
+            branches:
+              only: 
+                - master
