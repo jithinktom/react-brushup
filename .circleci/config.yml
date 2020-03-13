@@ -15,25 +15,24 @@ jobs:
           paths:
             - ./node_modules
       - run: npm test
-  deploy:
-    docker:
-      - image: circleci/node:latest
-    steps: 
-      run: docker build Dockerfile -t jithinktom/react-brushup
+  deploy_image:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: jithinktom/react-brushup
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: jithinktom/react-brushup
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
 workflows:
   build_and_deploy:
     jobs:
       - run_tests
-      - deploy:
+      - deploy_image:
           requires:
             - run_tests
-      # - docker/publish:
-      #     path: 
-      #     image: jithinktom/react-brushup
-      #     dockerfile: dockerfile
-      #     requires:
-      #       - run_tests
-      #     filters:
-      #       branches:
-      #         only: 
-      #           - master
