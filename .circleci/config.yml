@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1.6
+  docker: circleci/docker@0.5.13
 jobs:
   run_tests:
     docker:
@@ -20,7 +20,7 @@ workflows:
   build_and_deploy:
     jobs:
       - run_tests
-      - docker_publish:
+      - docker/publish:
           image: jithinktom/react-brushup
           dockerfile: dockerfile
           requires:
