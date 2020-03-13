@@ -24,7 +24,9 @@ workflows:
   build_and_deploy:
     jobs:
       - run_tests
-      - deploy
+      - deploy:
+          requires:
+            - run_tests
       # - docker/publish:
       #     path: 
       #     image: jithinktom/react-brushup
