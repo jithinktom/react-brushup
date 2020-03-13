@@ -16,6 +16,8 @@ jobs:
             - ./node_modules
       - run: npm test
   deploy:
+    docker:
+      - image: circleci/node:latest
     steps: 
       run: docker build . -t jithinktom/react-brushup:$CIRCLE_SHA1
 workflows:
